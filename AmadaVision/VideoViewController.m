@@ -144,7 +144,8 @@ UIBackgroundTaskIdentifier bgTask = 0;
         NSMutableArray *arrEntery=[dictJSON objectForKey:@"data"];
         NSMutableDictionary *dict2=[arrEntery objectAtIndex:0];
         NSString *strRes=[dict2 objectForKey:@"Success"];
-        if ([strRes isEqualToString:@"You have been successfully exited from Video Conference"])
+//        if ([strRes isEqualToString:@"You have been successfully exited from Video Conference"])
+        if(strRes!=nil)
         {
             [self.navigationController popViewControllerAnimated:YES];
         }

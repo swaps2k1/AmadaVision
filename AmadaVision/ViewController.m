@@ -55,12 +55,12 @@
         
         [self.tempAct setHidesWhenStopped:NO];
         [self.tempAct startAnimating];
-        if(aTimer==nil)
+        if(aTimer!=nil)
         {
             [aTimer invalidate];
             aTimer=nil;
         }
-        aTimer=  [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(sendDataToServer) userInfo:nil repeats:YES];
+        aTimer=  [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(sendDataToServer) userInfo:nil repeats:YES];
      }
 else
    {
@@ -95,6 +95,7 @@ else
         [self.tempAct stopAnimating];
         [self.tempAct setHidesWhenStopped:YES];
         [self Remove_Loader];
+        [self performSelector:@selector(performExitAction) withObject:nil afterDelay:0.3];
         
     }
 }
@@ -182,7 +183,7 @@ else
 
 -(void)sendDataToServer
 {
-    
+    NSLog(@"Hitting service....");
     
    if ([[self getChatKey] length]==0)
    {
@@ -285,7 +286,7 @@ else
                         VideoViewController *obj=[[VideoViewController alloc] initWithNibName:@"VideoViewController" bundle:[NSBundle mainBundle]];
                         obj.strToke=token;
                         obj.strSession=session;
-                        obj.strPassKey_Id=passkey_id;
+                        obj.strPassKey_Id= passkey_id;
                         obj.strFrmuType = connType;
                         txtPromoCode.text= [self getChatKey]; //Tom or empty string?
                         [self.navigationController pushViewController:obj animated:YES];
@@ -366,6 +367,66 @@ else
         [errorAlert release];
     }   
     [pool release];
+}
+
+
+-(void)performExitAction
+{
+ 
+     NSString* chatKey = [txtPromoCode.text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    
+    NSString *post =[NSString stringWithFormat:@"passkey=%@",chatKey];
+    NSData *postData = [post dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+    NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[postData length]];
+    NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] init] autorelease];
+    //[request setURL:[NSURL URLWithString:@"http://magnavision.net/exit_webservice.php"]];
+    [request setURL:[NSURL URLWithString:@"http://amada.magnavision360.com/exit_webservice.php"]];
+    //URL signature changed
+    
+    [request setHTTPMethod:@"POST"];
+    [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setHTTPBody:postData];
+    
+    NSURLResponse *response=nil;
+    NSError *err=nil;
+    
+    NSData *data= [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&err];
+    
+    if (err==nil)
+    {
+        NSMutableDictionary *dictJSON=[NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers | NSJSONReadingMutableLeaves error:nil];
+        NSMutableArray *arrEntery=[dictJSON objectForKey:@"data"];
+        NSMutableDictionary *dict2=[arrEntery objectAtIndex:0];
+        NSString *strRes=[dict2 objectForKey:@"Success"];
+        //        if ([strRes isEqualToString:@"You have been successfully exited from Video Conference"])
+        if(strRes!=nil)
+        {
+            //[self.navigationController popViewControllerAnimated:YES];
+        }
+        else
+        {
+            UIAlertView *errorAlert = [[UIAlertView alloc]
+                                       initWithTitle: @"Error"
+                                       message: @"Exit Fail"
+                                       delegate:nil
+                                       cancelButtonTitle:@"OK"
+                                       otherButtonTitles:nil];
+            [errorAlert show];
+            [errorAlert release];
+        }
+    }
+    else {
+        
+        UIAlertView *errorAlert = [[UIAlertView alloc]
+                                   initWithTitle: @"Error"
+                                   message: @"Network connection fail"
+                                   delegate:nil
+                                   cancelButtonTitle:@"OK"
+                                   otherButtonTitles:nil];
+        [errorAlert show];
+        [errorAlert release];
+    }
 }
 
 

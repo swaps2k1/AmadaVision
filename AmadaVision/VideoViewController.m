@@ -217,6 +217,8 @@ UIBackgroundTaskIdentifier bgTask = 0;
     }
     
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    btnConnection.hidden = YES;
+    btnDisconnect.hidden = YES;
     [self setupFrames:orientation];
 
     [super viewWillAppear:animated];
@@ -326,7 +328,7 @@ UIBackgroundTaskIdentifier bgTask = 0;
     bottomArea.origin.y = mainViewRect.size.height - kButtonHeight;
     
     CGRect buttonExitRect = bottomArea;
-    buttonExitRect.size.width = bottomArea.size.width/2.0;
+    buttonExitRect.size.width = bottomArea.size.width;//bottomArea.size.width/2.0 for half size
     
     CGRect rightButtonRect = bottomArea;
     rightButtonRect.size.width = bottomArea.size.width/2.0;
@@ -338,8 +340,8 @@ UIBackgroundTaskIdentifier bgTask = 0;
     
     
     [_btnExit setFrame:buttonExitRect];
-    [btnConnection setFrame:rightButtonRect];
-    [btnDisconnect setFrame:rightButtonRect];
+    //[btnConnection setFrame:rightButtonRect];
+    //[btnDisconnect setFrame:rightButtonRect];
     [_lblConnectivity setFrame:lblFrame];
     [_publisher.view setFrame:publishRect];
     [_subscriber.view setFrame:subscribeRect];
@@ -418,7 +420,7 @@ UIBackgroundTaskIdentifier bgTask = 0;
 - (void)sessionDidConnect:(OTSession*)session
 {
     if (kUseButtons)
-        btnDisconnect.hidden = NO;
+        //btnDisconnect.hidden = NO;
     
     btnConnection.hidden = YES;
     btnConnection.userInteractionEnabled=YES;
@@ -431,7 +433,7 @@ UIBackgroundTaskIdentifier bgTask = 0;
 {
     btnDisconnect.hidden = YES;
     if (kUseButtons)
-        btnConnection.hidden = NO;
+        //btnConnection.hidden = NO;
     
     btnConnection.userInteractionEnabled=YES;
     btnDisconnect.userInteractionEnabled=YES;
